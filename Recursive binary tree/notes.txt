@@ -1,0 +1,19 @@
+
+
+Hello, this is my first algorithm,
+currently, sum of squares is calculated using brute forse, gradient descent should be added.
+Also in some cases, it is not dividing predictor space when it should, if you have any ideas how i should fix it,
+please i would be glad if you could help.
+In later commits, i will add Tree pruning part and finilize with bagging, random forrests and boosting.
+ 
+Please contact me with any ideas, advices or anything at all: nemanja.boskovic17@gmail.com
+
+Dependencies:
+Pandas
+Numpy
+Matplotlib
+
+Using the data from the book: An introduction to Statistical Learning -  James, Tibshirani 
+
+P.S. sorry about the Serbian comments in the script, sometimes when the thinking process is hard for me,
+it is easier if i use Serbian to guide myself through. 
