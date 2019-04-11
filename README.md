@@ -1,2 +1,2 @@
 # Statistical-Learning-algorithms
-Some statistical learning algorithms i am developing throughout my learning towards machine learning.
+Some machine learning algorithms i am developing during my learning path. Note that some of the algorithms are written over a year agoo in a non vectorized form which makes them inefficient.
