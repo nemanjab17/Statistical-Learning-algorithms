@@ -1,0 +1,84 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+class MinMaxScaler(object):
+
+    def __init__(self):
+        self.param = None
+
+    def fit(self, X):
+        params = []
+        for colName in X.columns.values:
+            params.append((X[colName].max(), X[colName].min()))
+        self.param = params
+
+    def transform(self, X):
+        for i in range(len(X.columns.values)):
+            X[X.columns.values[i]] = (X.iloc[:, i]-self.param[i][0])/(self.param[i][1]-self.param[i][0])
+        return X
+        
+def assignClusters(a,c):
+    M = np.zeros((c.shape[0], a.shape[0]))
+    for i in range(c.shape[0]):
+        sq = np.square(a-c[i])
+        cluster = np.sqrt(np.sum(sq, axis=1))
+        M[i] = cluster
+    clusters = np.argmin(M, axis=0)
+    return clusters
+class KMeans():
+
+    def __init__(self, n_clusters, k_iterations, z_inits=100):
+        self.n_clusters = n_clusters
+        self.k_iterations = k_iterations
+        self.z_inits = z_inits
+        self.dataset = None
+
+    def fit(self, X):
+        scaler = MinMaxScaler()
+        scaler.fit(X)
+        X = scaler.transform(X)
+        X2 = X.values
+        globalbest = []
+
+        checkOK = False
+        while not checkOK:
+            np.random.shuffle(X2)
+            c = X2[:self.n_clusters]
+            a = assignClusters(X, c)
+            counter = 0
+            for i in range(self.n_clusters):
+                if i in a:
+                    counter +=1
+            if counter == self.n_clusters:
+                checkOK = True
+        newc = np.array([])
+        iter_count = 0
+        while iter_count < self.k_iterations and not np.array_equal(c,newc):
+            C = np.zeros((a.shape[0], a.max()+1))
+            C[np.arange(a.shape[0]), a.T-1] = 1
+            sum = np.matmul(C.T, X.values)
+            K = np.linalg.inv(np.diagflat(np.matmul(C.T, np.full((C.T.shape[1], 1), 1))))
+            newc = np.matmul(K, sum)
+            a = assignClusters(X, newc)
+            iter_count += 1
+        X["Cluster"] = a
+        return newc, X
+        
+age = [18, 21, 22, 24, 26, 26, 27, 30, 31, 35, 39, 40, 41, 42, 44, 46, 47, 48, 49, 54]
+salary = [10000, 11000, 22000, 15000, 12000, 13000, 14000, 33000, 39000, 37000, 44000, 27000, 29000, 20000, 28000, 21000, 30000, 31000, 23000, 24000]
+
+df = pd.DataFrame({"Age": age, "Salary": salary})
+a1 = KMeans(4, 100)
+centroids, assigns = a1.fit(df)
+
+cluster_color_map = {0:'g', 1:'b', 2:'r', 3:'y'}
+cluster_color = [cluster_color_map[i] for i in df.Cluster]
+
+plt.xlabel('Age')
+plt.ylabel('Salary')
+plt.scatter(df.Age, df.Salary, c = cluster_color, label = df.Cluster)
+plt.scatter(centroids[:, 0], centroids[:, 1], marker='+', s = 200, c = 'black')
+plt.show()
+
+
